@@ -6,6 +6,11 @@ Data Science
 Projet d'introduction
 </p>
 
+## 🏆 Feature
+
+- [ ] [ETL cipUCDfev23.rdf](./docs/ETL_RDF.md)
+- [ ] [ETL cisCip.txt](./docs/ETL_TXT.md)
+
 ## 🧑‍💻 Contributors
 
 - DUFOUR Kelly
