@@ -13,22 +13,23 @@ java -jar rdf2rdf/target/rdf2rdf-1.1.0-jar-with-dependencies.jar data/cipUCDfev2
 
 Convert `.nt` file to dataframe
 ```scala
-val df = spark.read.textFile("/FileStore/tables/cipUCDfev23.nt").rdd
-//val dataframe = df.map(l => l.split(" ")).map(l => (l(0), (l(1), l(2)))).toDF("subject", "propeties")
-//val dataframe = df.map(l => l.split(" ")).map(l => (l(0), (l(1), l(2)))).reduce
 
-//df.map(l => l.split(" ")).map(l => (l(0), (l(1), l(2)))).reduceByKey{ (m1, m2) => println(m2) }
+val dataframe = spark.read.textFile("/FileStore/tables/cipUCDfev23.nt").map(l => l.split(" ")).map(l => (l(0), l(1), l(2))).toDF("subject", "property", "value")
+dataframe.createOrReplaceTempView("database")
 
+val nom = spark.sql("SELECT subject, value as nom FROM database WHERE property LIKE '%rdf-schema#label%'").show(1)
 
-/*
-val dataframeProps = df.map(l => l.split(" ")).map(l => (l(1))).distinct.toDF("properties")
-val dataframeSubjects = df.map(l => l.split(" ")).map(l => (l(0))).distinct.toDF("subjects")
+val labo = spark.sql("SELECT subject, value as labo FROM database WHERE property LIKE '%titulaire%'").show(1)
 
-dataframe.createOrReplaceTempView("db")
-dataframeProps.createOrReplaceTempView("dbProps")
-dataframeSubjects.createOrReplaceTempView("dbSubjects")
+val ephMRE = spark.sql("SELECT subject, value as ephMRE FROM database WHERE property LIKE '%ephMRA%'").show(1)
 
-val res = spark.sql("SELECT subjects as CIP13, properties as PROPS, value as o FROM dbProps, dbSubjects LEFT OUTER JOIN db WHERE db.subject = dbSubjects.subjects AND db.property = dbProps.properties")
-*/
+val ucd13 = spark.sql("""
+SELECT d2.subject, d2.value as ucd13
+
+FROM database as d1, database as d2
+
+WHERE 
+    d1.property LIKE '%type%' AND d1.value='%UCD%'
+""").show(1)
 
 ```
